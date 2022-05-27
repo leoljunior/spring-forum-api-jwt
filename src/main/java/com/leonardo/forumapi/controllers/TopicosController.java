@@ -8,6 +8,8 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -44,6 +46,7 @@ public class TopicosController {
 	private CursoRepository cursoRepository;
 	
 	@GetMapping //para habilitar a paginação é necessario anotar a classe aplication com @EnableSpringDataWebSupport
+	@Cacheable(value = "listaDeTopicos") //indica que o retorno do metodo vai ser cacheavel e value é o identificador
 	public Page<TopicoDto> lista(@RequestParam(required = false) String nomeCurso, @PageableDefault(sort = "id", direction = Direction.ASC, page = 0, size = 10) Pageable pageable) {
 		if (nomeCurso == null) {
 			Page<Topico> topicos = topicoRepository.findAll(pageable);
@@ -56,6 +59,7 @@ public class TopicosController {
 	
 	@PostMapping
 	@Transactional
+	@CacheEvict(value = "listaDeTopicos", allEntries = true) //indica que qdo esse metodo for chamado o spring limpa o cache, passando qual o cache e se é pra limpar todas entredas.
 	public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder uriBuilder) {
 		Topico topico = form.converter(cursoRepository);
 		topicoRepository.save(topico);
