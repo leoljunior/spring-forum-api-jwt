@@ -27,6 +27,16 @@ public class Usuario implements UserDetails {
 	@ManyToMany(fetch = FetchType.EAGER) //para qdo carregar o usuario carregar tbm os perfis dele pq por padrao o lazy nao carrega
 	private List<Perfil> perfis;
 
+		
+	public Usuario() {
+	}
+	
+	public Usuario(String nome, String email, String senha) {
+		this.nome = nome;
+		this.email = email;
+		this.senha = senha;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
